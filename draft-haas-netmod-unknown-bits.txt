@@ -1,0 +1,896 @@
+
+
+
+
+netmod                                                      J. Haas, Ed.
+Internet-Draft                                          Juniper Networks
+Intended status: Informational                           25 January 2023
+Expires: 29 July 2023
+
+
+          Representing Unknown YANG bits in Operational State
+                   draft-haas-netmod-unknown-bits-00
+
+Abstract
+
+   Protocols frequently have fields where the contents are a series of
+   bits that have specific meaning.  When modeling operational state for
+   such protocols in YANG, the 'bits' YANG built-in type is a natural
+   method for modeling such fields.  The YANG 'bits' built-in type is
+   best suited when the meaning of a bit assignment is clear.
+
+   When bits that are currently RESERVED or otherwise unassigned by the
+   protocol are received, being able to display them is necessary in
+   YANG operational models.  This cannot be done using the YANG 'bits'
+   built-in type without assigning them a name.  However, YANG
+   versioning rules do not permit renaming of named bits.
+
+   This draft proposes a methodology to represent unknown bits in YANG
+   operational models and creates a YANG typedef to assist in uniformly
+   naming such unknown bits.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 29 July 2023.
+
+Copyright Notice
+
+   Copyright (c) 2023 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+
+
+Haas                      Expires 29 July 2023                  [Page 1]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Simplified BSD License text
+   as described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Simplified BSD License.
+
+Table of Contents
+
+   1.  Requirements Language . . . . . . . . . . . . . . . . . . . .   2
+   2.  Modeling Protocol Bit Vectors in YANG . . . . . . . . . . . .   2
+   3.  Example of Issue: Modeling BGP's Graceful Restart Flags . . .   3
+   4.  Modeling Unknown Bits . . . . . . . . . . . . . . . . . . . .   5
+   5.  IETF YANG Unknown Bit Types Module  . . . . . . . . . . . . .   6
+   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
+     6.1.  URI Registration  . . . . . . . . . . . . . . . . . . . .  14
+     6.2.  YANG Module Name Registration . . . . . . . . . . . . . .  15
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  15
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  15
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  15
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  16
+
+1.  Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in BCP
+   14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  Modeling Protocol Bit Vectors in YANG
+
+   Protocols frequently will have bit vectors as fields.  Not all bits
+   in such bit vectors are assigned during the specification of the
+   protocol.  These unassigned bits are typically made RESERVED and are
+   used at a later date to provide for new features.
+
+   The YANG 'bits' built-in type (Section 9.7 of [RFC7950]) can be used
+   to provide a "named bit" mapping to currently assigned bits in such
+   fields.  The representation format of 'bits' is "a space-separated
+   list of the names of the bits that are set".  However, when no
+   assignment has been made for a bit position, nothing will be
+   rendered.
+
+
+
+
+
+Haas                      Expires 29 July 2023                  [Page 2]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+   There are operational needs for displaying received bits that may not
+   be part of known assignments in the protocol.  One such example is
+   debugging behavior when unexpected bits have been sent in the
+   protocol.  This may occur when interacting with a version of the
+   protocol that has assigned a previously unassigned bit.
+
+   One way to model such a scenario is to have one YANG leaf that covers
+   known bit assignments, and have a subsequent YANG leaf contain
+   unknown bits.
+
+3.  Example of Issue: Modeling BGP's Graceful Restart Flags
+
+   BGP's Graceful Restart Capability (Section 3 of [RFC4724]) contains a
+   Restart Flags field that is four bits wide.  Its definition is copied
+   below:
+
+
+                                  0 1 2 3
+                                 +-+-+-+-+
+                                 |R|Resv.|
+                                 +-+-+-+-+
+
+
+                    Figure 1: BGP Graceful Restart Flags
+
+   The 'R' (Restart State) bit has been assigned in RFC 4724.  One way
+   to model this (taken from [I-D.ietf-idr-bgp-model]) is:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Haas                      Expires 29 July 2023                  [Page 3]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+        typedef graceful-restart-flags {
+          type bits {
+            bit restart {
+              position 0;
+              description
+                "The most significant bit is defined as the Restart
+                 State (R) bit, [...]";
+              reference
+                "RFC 4724: Graceful Restart Mechanism for BGP,
+                 Section 3.";
+            }
+          }
+          [...]
+        }
+
+        [...]
+
+        leaf flags {
+          type bt:graceful-restart-flags;
+          description
+            "Restart Flags advertised by the Graceful Restart
+             Capability";
+          reference
+            "RFC 4724: Graceful Restart Mechanism for BGP, Section 3.";
+        }
+
+
+                    Figure 2: BGP Graceful Restart Flags
+
+   [RFC8538] later assigns bit position 1 to the 'N' flag, updating the
+   set of flags used in this field:
+
+
+                                  0 1 2 3
+                                 +-+-+-+-+
+                                 |R|N|   |
+                                 +-+-+-+-+
+
+
+         Figure 3: BGP Graceful Restart Flags, Revised by RFC 8538
+
+   YANG module revisioning rules would require the graceful-restart-
+   flags typedef to be updated.  For such protocol well-known fields,
+   this encourages such typedefs to be IANA-maintained for ease of
+   update.  Such a revised typedef may resemble:
+
+
+
+
+
+
+Haas                      Expires 29 July 2023                  [Page 4]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+        typedef graceful-restart-flags {
+          type bits {
+            bit restart {
+              position 0;
+              description
+                "The most significant bit is defined as the Restart
+                 State (R) bit, [...]";
+              reference
+                "RFC 4724: Graceful Restart Mechanism for BGP,
+                 Section 3.";
+            }
+          }
+          bit notification {
+            position 1;
+            description
+              "The second most significant bit is defined in [RFC 8538]
+               as the Graceful Notification ('N') bit. [...]";
+            reference
+              "RFC 8538: Notification Message Support for BGP Graceful
+               Restart, Section 2.";
+          }
+        }
+
+
+            Figure 4: Revised BGP Graceful Restart Flags Typedef
+
+   If a router supporting the old typedef received a BGP Graceful
+   Restart Capability containing both the 'R' and 'N' bit in the BGP
+   protocol.  In that typedef, the "flags" leaf could only display
+   position 0, the "restart" named bit.  The implementation couldn't
+   display that the 'N' bit was present.
+
+4.  Modeling Unknown Bits
+
+   One solution to modeling unknown bits is to have a subsequent leaf
+   whose purposes is only to display unknown bit mappings.  When the
+   protocol does not send the unassigned bits, this leaf would be absent
+   in the output of the operational state.
+
+   Using the prior example, one way to model this would be:
+
+
+
+
+
+
+
+
+
+
+
+Haas                      Expires 29 July 2023                  [Page 5]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+        leaf unknown-flags {
+          type bits {
+            bit unknown-2 {
+              position 2;
+              description
+                "Bit 2 was received but is currently RESERVED.";
+            }
+            bit unknown-3 {
+              position 3;
+              description
+                "Bit 3 was received but is currently RESERVED.";
+            }
+          }
+          description
+            "When a bit is exchanged in the Graceful Restart Flags
+             field that is unknown to this module, their bit position
+             is rendered using the associated unknown bit.";
+          reference
+            "RFC 4724: Graceful Restart Mechanism for BGP, Section 3.";
+        }
+
+
+            Figure 5: BGP Graceful Restart Specific Unknown Bits
+
+   Deleting bit assignments in later versions of the model are not
+   permitted by current YANG versioning rules.  Since the only purpose
+   of such a bits type is to display fields that may change during
+   maintenance of the protocol, ideally a single typedef is when
+   modeling such circumstances.  Such a typedef is included in the next
+   section.
+
+5.  IETF YANG Unknown Bit Types Module
+
+
+  module ietf-yang-unknown-bit-types {
+    yang-version 1.1;
+    namespace "urn:ietf:params:xml:ns:yang:ietf-yang-unknown-bit-types";
+    prefix yang-ubt;
+
+    // meta
+
+    organization
+      "IETF NETMOD (NETCONF Data Modeling Language) Working Group";
+
+    contact
+      "WG Web:   <http://tools.ietf.org/wg/netmod/>
+       WG List:  <mailto:netmod@ietf.org>
+
+
+
+
+Haas                      Expires 29 July 2023                  [Page 6]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+       Editor:   Jeffrey Haas
+                 <mailto:jhaas@juniper.net>";
+
+    description
+      "This module contains data definitions for modeling operational
+       state that would normally be represented using the YANG 'bits'
+       type, but currently no known mapping for that bit position is
+       registered.
+
+       Copyright (c) 2023 IETF Trust and the persons identified as
+       authors of the code. All rights reserved.
+
+       Redistribution and use in source and binary forms, with or
+       without modification, is permitted pursuant to, and subject to
+       the license terms contained in, the Simplified BSD License set
+       forth in Section 4.c of the IETF Trust's Legal Provisions
+       Relating to IETF Documents
+       (https://trustee.ietf.org/license-info).
+
+       This version of this YANG module is part of RFC XXXX
+       (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+       for full legal notices.
+
+       The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+       NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+       'MAY', and 'OPTIONAL' in this document are to be interpreted as
+       described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+       they appear in all capitals, as shown here.";
+
+    revision 2023-01-25 {
+      description
+        "Initial Version";
+      reference
+        "RFC XXXX: YANG module for unknown bit types.";
+    }
+
+    /*
+     * Typedefs
+     */
+
+    typedef unknown-bits {
+      type bits {
+        bit unknown-0 {
+          position 0;
+          description
+            "Bit 0 currently has no known mapping for this state.";
+        }
+        bit unknown-1 {
+
+
+
+Haas                      Expires 29 July 2023                  [Page 7]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+          position 1;
+          description
+            "Bit 1 currently has no known mapping for this state.";
+        }
+        bit unknown-2 {
+          position 2;
+          description
+            "Bit 2 currently has no known mapping for this state.";
+        }
+        bit unknown-3 {
+          position 3;
+          description
+            "Bit 3 currently has no known mapping for this state.";
+        }
+        bit unknown-4 {
+          position 4;
+          description
+            "Bit 4 currently has no known mapping for this state.";
+        }
+        bit unknown-5 {
+          position 5;
+          description
+            "Bit 5 currently has no known mapping for this state.";
+        }
+        bit unknown-6 {
+          position 6;
+          description
+            "Bit 6 currently has no known mapping for this state.";
+        }
+        bit unknown-7 {
+          position 7;
+          description
+            "Bit 7 currently has no known mapping for this state.";
+        }
+        bit unknown-8 {
+          position 8;
+          description
+            "Bit 8 currently has no known mapping for this state.";
+        }
+        bit unknown-9 {
+          position 9;
+          description
+            "Bit 9 currently has no known mapping for this state.";
+        }
+        bit unknown-10 {
+          position 10;
+          description
+            "Bit 10 currently has no known mapping for this state.";
+
+
+
+Haas                      Expires 29 July 2023                  [Page 8]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+        }
+        bit unknown-11 {
+          position 11;
+          description
+            "Bit 11 currently has no known mapping for this state.";
+        }
+        bit unknown-12 {
+          position 12;
+          description
+            "Bit 12 currently has no known mapping for this state.";
+        }
+        bit unknown-13 {
+          position 13;
+          description
+            "Bit 13 currently has no known mapping for this state.";
+        }
+        bit unknown-14 {
+          position 14;
+          description
+            "Bit 14 currently has no known mapping for this state.";
+        }
+        bit unknown-15 {
+          position 15;
+          description
+            "Bit 15 currently has no known mapping for this state.";
+        }
+        bit unknown-16 {
+          position 16;
+          description
+            "Bit 16 currently has no known mapping for this state.";
+        }
+        bit unknown-17 {
+          position 17;
+          description
+            "Bit 17 currently has no known mapping for this state.";
+        }
+        bit unknown-18 {
+          position 18;
+          description
+            "Bit 18 currently has no known mapping for this state.";
+        }
+        bit unknown-19 {
+          position 19;
+          description
+            "Bit 19 currently has no known mapping for this state.";
+        }
+        bit unknown-20 {
+          position 20;
+
+
+
+Haas                      Expires 29 July 2023                  [Page 9]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+          description
+            "Bit 20 currently has no known mapping for this state.";
+        }
+        bit unknown-21 {
+          position 21;
+          description
+            "Bit 21 currently has no known mapping for this state.";
+        }
+        bit unknown-22 {
+          position 22;
+          description
+            "Bit 22 currently has no known mapping for this state.";
+        }
+        bit unknown-23 {
+          position 23;
+          description
+            "Bit 23 currently has no known mapping for this state.";
+        }
+        bit unknown-24 {
+          position 24;
+          description
+            "Bit 24 currently has no known mapping for this state.";
+        }
+        bit unknown-25 {
+          position 25;
+          description
+            "Bit 25 currently has no known mapping for this state.";
+        }
+        bit unknown-26 {
+          position 26;
+          description
+            "Bit 26 currently has no known mapping for this state.";
+        }
+        bit unknown-27 {
+          position 27;
+          description
+            "Bit 27 currently has no known mapping for this state.";
+        }
+        bit unknown-28 {
+          position 28;
+          description
+            "Bit 28 currently has no known mapping for this state.";
+        }
+        bit unknown-29 {
+          position 29;
+          description
+            "Bit 29 currently has no known mapping for this state.";
+        }
+
+
+
+Haas                      Expires 29 July 2023                 [Page 10]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+        bit unknown-30 {
+          position 30;
+          description
+            "Bit 30 currently has no known mapping for this state.";
+        }
+        bit unknown-31 {
+          position 31;
+          description
+            "Bit 31 currently has no known mapping for this state.";
+        }
+        bit unknown-32 {
+          position 32;
+          description
+            "Bit 32 currently has no known mapping for this state.";
+        }
+        bit unknown-33 {
+          position 33;
+          description
+            "Bit 33 currently has no known mapping for this state.";
+        }
+        bit unknown-34 {
+          position 34;
+          description
+            "Bit 34 currently has no known mapping for this state.";
+        }
+        bit unknown-35 {
+          position 35;
+          description
+            "Bit 35 currently has no known mapping for this state.";
+        }
+        bit unknown-36 {
+          position 36;
+          description
+            "Bit 36 currently has no known mapping for this state.";
+        }
+        bit unknown-37 {
+          position 37;
+          description
+            "Bit 37 currently has no known mapping for this state.";
+        }
+        bit unknown-38 {
+          position 38;
+          description
+            "Bit 38 currently has no known mapping for this state.";
+        }
+        bit unknown-39 {
+          position 39;
+          description
+
+
+
+Haas                      Expires 29 July 2023                 [Page 11]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+            "Bit 39 currently has no known mapping for this state.";
+        }
+        bit unknown-40 {
+          position 40;
+          description
+            "Bit 40 currently has no known mapping for this state.";
+        }
+        bit unknown-41 {
+          position 41;
+          description
+            "Bit 41 currently has no known mapping for this state.";
+        }
+        bit unknown-42 {
+          position 42;
+          description
+            "Bit 42 currently has no known mapping for this state.";
+        }
+        bit unknown-43 {
+          position 43;
+          description
+            "Bit 43 currently has no known mapping for this state.";
+        }
+        bit unknown-44 {
+          position 44;
+          description
+            "Bit 44 currently has no known mapping for this state.";
+        }
+        bit unknown-45 {
+          position 45;
+          description
+            "Bit 45 currently has no known mapping for this state.";
+        }
+        bit unknown-46 {
+          position 46;
+          description
+            "Bit 46 currently has no known mapping for this state.";
+        }
+        bit unknown-47 {
+          position 47;
+          description
+            "Bit 47 currently has no known mapping for this state.";
+        }
+        bit unknown-48 {
+          position 48;
+          description
+            "Bit 48 currently has no known mapping for this state.";
+        }
+        bit unknown-49 {
+
+
+
+Haas                      Expires 29 July 2023                 [Page 12]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+          position 49;
+          description
+            "Bit 49 currently has no known mapping for this state.";
+        }
+        bit unknown-50 {
+          position 50;
+          description
+            "Bit 50 currently has no known mapping for this state.";
+        }
+        bit unknown-51 {
+          position 51;
+          description
+            "Bit 51 currently has no known mapping for this state.";
+        }
+        bit unknown-52 {
+          position 52;
+          description
+            "Bit 52 currently has no known mapping for this state.";
+        }
+        bit unknown-53 {
+          position 53;
+          description
+            "Bit 53 currently has no known mapping for this state.";
+        }
+        bit unknown-54 {
+          position 54;
+          description
+            "Bit 54 currently has no known mapping for this state.";
+        }
+        bit unknown-55 {
+          position 55;
+          description
+            "Bit 55 currently has no known mapping for this state.";
+        }
+        bit unknown-56 {
+          position 56;
+          description
+            "Bit 56 currently has no known mapping for this state.";
+        }
+        bit unknown-57 {
+          position 57;
+          description
+            "Bit 57 currently has no known mapping for this state.";
+        }
+        bit unknown-58 {
+          position 58;
+          description
+            "Bit 58 currently has no known mapping for this state.";
+
+
+
+Haas                      Expires 29 July 2023                 [Page 13]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+        }
+        bit unknown-59 {
+          position 59;
+          description
+            "Bit 59 currently has no known mapping for this state.";
+        }
+        bit unknown-60 {
+          position 60;
+          description
+            "Bit 60 currently has no known mapping for this state.";
+        }
+        bit unknown-61 {
+          position 61;
+          description
+            "Bit 61 currently has no known mapping for this state.";
+        }
+        bit unknown-62 {
+          position 62;
+          description
+            "Bit 62 currently has no known mapping for this state.";
+        }
+        bit unknown-63 {
+          position 63;
+          description
+            "Bit 63 currently has no known mapping for this state.";
+        }
+      }
+      description
+        "Typedef describing 64 bits worth of unknown bits.  This can be
+         used to model operational state that would normally be modeled
+         using the YANG 'bits' type, but no registered bit has been
+         created.";
+    }
+  }
+
+
+                                 Figure 6
+
+6.  IANA Considerations
+
+   This document registers one URI and one YANG module.
+
+6.1.  URI Registration
+
+   Following the format in the IETF XML registry [RFC3688] [RFC3688],
+   the following registration is requested to be made:
+
+   URI: urn:ietf:params:xml:ns:yang:ietf-yang-unknown-bit-types
+
+
+
+Haas                      Expires 29 July 2023                 [Page 14]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+                                  Figure 7
+
+   Registrant Contact: The IESG.  XML: N/A, the requested URI is an XML
+   namespace.
+
+6.2.  YANG Module Name Registration
+
+   This document registers one YANG module in the YANG Module Names
+   registry YANG [RFC6020].
+
+   name: ietf-yang-unknown-bit-types
+   namespace: urn:ietf:params:xml:ns:yang:ietf-yang-unknown-bit-types
+   prefix: yang-ubt
+   reference: RFC XXXX
+
+                                  Figure 8
+
+7.  Security Considerations
+
+   Lack of operational visibility for protocol state can make
+   troubleshooting protocol issues more difficult.  The mechanism
+   defined in this document may help reduce the scope of such issues and
+   potentially remove the security considerations such lack of
+   operational visibility may cause.
+
+8.  References
+
+8.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/info/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+   [RFC7950]  Bjorklund, M., Ed., "The YANG 1.1 Data Modeling Language",
+              RFC 7950, DOI 10.17487/RFC7950, August 2016,
+              <https://www.rfc-editor.org/info/rfc7950>.
+
+8.2.  Informative References
+
+   [RFC3688]  Mealling, M., "The IETF XML Registry", BCP 81, RFC 3688,
+              DOI 10.17487/RFC3688, January 2004,
+              <https://www.rfc-editor.org/info/rfc3688>.
+
+
+
+
+Haas                      Expires 29 July 2023                 [Page 15]
+
+Internet-Draft              YANG Unknown Bits               January 2023
+
+
+   [RFC4724]  Sangli, S., Chen, E., Fernando, R., Scudder, J., and Y.
+              Rekhter, "Graceful Restart Mechanism for BGP", RFC 4724,
+              DOI 10.17487/RFC4724, January 2007,
+              <https://www.rfc-editor.org/info/rfc4724>.
+
+   [RFC6020]  Bjorklund, M., Ed., "YANG - A Data Modeling Language for
+              the Network Configuration Protocol (NETCONF)", RFC 6020,
+              DOI 10.17487/RFC6020, October 2010,
+              <https://www.rfc-editor.org/info/rfc6020>.
+
+   [RFC8538]  Patel, K., Fernando, R., Scudder, J., and J. Haas,
+              "Notification Message Support for BGP Graceful Restart",
+              RFC 8538, DOI 10.17487/RFC8538, March 2019,
+              <https://www.rfc-editor.org/info/rfc8538>.
+
+   [I-D.ietf-idr-bgp-model]
+              Jethanandani, M., Patel, K., Hares, S., and J. Haas, "BGP
+              YANG Model for Service Provider Networks", Work in
+              Progress, Internet-Draft, draft-ietf-idr-bgp-model-15, 13
+              October 2022, <https://www.ietf.org/archive/id/draft-ietf-
+              idr-bgp-model-15.txt>.
+
+Author's Address
+
+   Jeffrey Haas (editor)
+   Juniper Networks
+   1133 Innovation Way
+   Sunnyvale, CA 94089
+   United States of America
+
+   Email: jhaas@pfrc.org
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Haas                      Expires 29 July 2023                 [Page 16]

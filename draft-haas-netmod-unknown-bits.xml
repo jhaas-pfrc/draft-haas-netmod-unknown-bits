@@ -1,0 +1,770 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+     draft-rfcxml-general-template-standard-00
+  
+     This template includes examples of the most commonly used features of RFCXML with comments 
+     explaining how to customise them. This template can be quickly turned into an I-D by editing 
+     the examples provided. Look for [REPLACE], [REPLACE/DELETE], [CHECK] and edit accordingly.
+     Note - 'DELETE' means delete the element or attribute, not just the contents.
+     
+     Documentation is at https://authors.ietf.org/en/templates-and-schemas
+-->
+<?xml-model href="rfc7991bis.rnc"?>  <!-- Required for schema validation and schema-aware editing -->
+<!-- <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?> -->
+<!-- This third-party XSLT can be enabled for direct transformations in XML processors, including most browsers -->
+
+
+<!DOCTYPE rfc [
+  <!ENTITY nbsp    "&#160;">
+  <!ENTITY zwsp   "&#8203;">
+  <!ENTITY nbhy   "&#8209;">
+  <!ENTITY wj     "&#8288;">
+]>
+<!-- If further character entities are required then they should be added to the DOCTYPE above.
+     Use of an external entity file is not recommended. -->
+
+<rfc
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  category="info"
+  docName="draft-haas-netmod-unknown-bits-00"
+  ipr="trust200902"
+  obsoletes=""
+  updates=""
+  submissionType="IETF"
+  xml:lang="en"
+  version="3">
+<!-- [REPLACE] 
+       * docName with name of your draft
+     [CHECK] 
+       * category should be one of std, bcp, info, exp, historic
+       * ipr should be one of trust200902, noModificationTrust200902, noDerivativesTrust200902, pre5378Trust200902
+       * updates can be an RFC number as NNNN
+       * obsoletes can be an RFC number as NNNN 
+-->
+
+  <front>
+    <title abbrev="YANG Unknown Bits">Representing Unknown YANG bits in Operational State</title>
+
+    <seriesInfo name="Internet-Draft" value="draft-haas-netmod-unknown-bits-00"/>
+   
+    <author fullname="Jeffrey Haas" initials="J." role="editor" surname="Haas">
+      <organization>Juniper Networks</organization>
+
+      <address>
+        <postal>
+          <!-- Reorder these if your country does things differently -->
+          <street>1133 Innovation Way</street>
+          <city>Sunnyvale</city>
+          <region>CA</region>
+          <code>94089</code>
+          <country>US</country>
+        </postal>
+
+        <email>jhaas@pfrc.org</email>
+      </address>
+    </author>
+   
+    <date year="2023"/>
+
+    <area>Routing</area>
+    <workgroup>netmod</workgroup>
+
+<!--
+    <keyword>keyword</keyword>
+-->
+
+    <abstract>
+      <t>Protocols frequently have fields where the contents are a series of
+        bits that have specific meaning.  When modeling operational state for
+        such protocols in YANG, the 'bits' YANG built-in type is a natural
+        method for modeling such fields.  The YANG 'bits' built-in type is best
+        suited when the meaning of a bit assignment is clear.</t>
+
+      <t>When bits that are currently RESERVED or otherwise unassigned by the
+        protocol are received, being able to display them is necessary in YANG
+        operational models.  This cannot be done using the YANG 'bits' built-in
+        type without assigning them a name.  However, YANG versioning rules do
+        not permit renaming of named bits.</t>
+
+      <t>This draft proposes a methodology to represent unknown bits in YANG
+        operational models and creates a YANG typedef to assist in uniformly
+        naming such unknown bits.</t>
+    </abstract>
+ 
+  </front>
+
+  <middle>
+    
+    <section>
+      <name>Requirements Language</name>
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+        "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT
+        RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+        interpreted as described in BCP 14 <xref target="RFC2119"/>
+        <xref target="RFC8174"/> when, and only when, they appear in
+        all capitals, as shown here.</t>
+    </section>
+    
+    <section>
+      <name>Modeling Protocol Bit Vectors in YANG</name>
+      <t>Protocols frequently will have bit vectors as fields.  Not all bits in
+        such bit vectors are assigned during the specification of the protocol.
+        These unassigned bits are typically made RESERVED and are used at a
+        later date to provide for new features.</t>
+
+      <t>The YANG 'bits' built-in type (<xref target="RFC7950" section="9.7"/>)
+        can be used to provide a "named bit" mapping to currently assigned bits
+        in such fields.  The representation format of 'bits' is "a
+        space-separated list of the names of the bits that are set".  However,
+        when no assignment has been made for a bit position, nothing will be
+        rendered.</t>
+
+      <t>There are operational needs for displaying received bits that may not
+        be part of known assignments in the protocol.  One such example is
+        debugging behavior when unexpected bits have been sent in the protocol.
+        This may occur when interacting with a version of the protocol that has
+        assigned a previously unassigned bit.</t>
+
+      <t>One way to model such a scenario is to have one YANG leaf that covers
+        known bit assignments, and have a subsequent YANG leaf contain unknown
+        bits.</t>
+    </section>
+
+    <section>
+      <name>Example of Issue: Modeling BGP's Graceful Restart Flags</name>
+
+      <t>BGP's Graceful Restart Capability 
+        (<xref target="RFC4724" section="3"/>) contains a Restart Flags field
+        that is four bits wide.  Its definition is copied below:</t>
+
+      <figure>
+        <name>BGP Graceful Restart Flags</name>
+        <artset>
+          <artwork type="ascii-art" align="center">
+            <![CDATA[
+ 0 1 2 3
++-+-+-+-+
+|R|Resv.|
++-+-+-+-+
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+
+      <t>The 'R' (Restart State) bit has been assigned in RFC 4724.  One way to
+      model this (taken from <xref target="I-D.ietf-idr-bgp-model"/>) is:</t>
+
+      <figure>
+        <name>BGP Graceful Restart Flags</name>
+        <artset>
+          <artwork type="ascii-art" align="center">
+            <![CDATA[
+     typedef graceful-restart-flags {
+       type bits {
+         bit restart {
+           position 0;
+           description
+             "The most significant bit is defined as the Restart
+              State (R) bit, [...]";
+           reference
+             "RFC 4724: Graceful Restart Mechanism for BGP,
+              Section 3.";
+         }
+       }
+       [...]
+     }
+
+     [...]
+
+     leaf flags {
+       type bt:graceful-restart-flags;
+       description
+         "Restart Flags advertised by the Graceful Restart
+          Capability";
+       reference
+         "RFC 4724: Graceful Restart Mechanism for BGP, Section 3.";
+     }
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+
+      <t><xref target="RFC8538"/> later assigns bit position 1 to the 'N' flag,
+        updating the set of flags used in this field:</t>
+
+      <figure>
+        <name>BGP Graceful Restart Flags, Revised by RFC 8538</name>
+        <artset>
+          <artwork type="ascii-art" align="center">
+            <![CDATA[
+ 0 1 2 3
++-+-+-+-+
+|R|N|   |
++-+-+-+-+
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+
+      <t>YANG module revisioning rules would require the graceful-restart-flags typedef to be updated.  For such protocol well-known fields, this encourages such typedefs to be IANA-maintained for ease of update.  Such a revised typedef may resemble:</t>
+
+      <figure>
+        <name>Revised BGP Graceful Restart Flags Typedef</name>
+        <artset>
+          <artwork type="ascii-art" align="center">
+            <![CDATA[
+     typedef graceful-restart-flags {
+       type bits {
+         bit restart {
+           position 0;
+           description
+             "The most significant bit is defined as the Restart
+              State (R) bit, [...]";
+           reference
+             "RFC 4724: Graceful Restart Mechanism for BGP,
+              Section 3.";
+         }
+       }
+       bit notification {
+         position 1;
+         description
+           "The second most significant bit is defined in [RFC 8538]
+            as the Graceful Notification ('N') bit. [...]";
+         reference
+           "RFC 8538: Notification Message Support for BGP Graceful
+            Restart, Section 2.";
+       }
+     }
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+
+      <t>Consider a router supporting the old typedef receiving a BGP Graceful Restart
+        Capability containing both the 'R' and 'N' bit in the BGP protocol.  In
+        that typedef, the "flags" leaf could only display position 0, the
+        "restart" named bit.  The implementation couldn't display that the 'N'
+        bit was sent in the protocol.</t>
+    </section>
+
+    <section>
+      <name>Modeling Unknown Bits</name>
+
+      <t>One solution to modeling unknown bits is to have a subsequent leaf
+        whose purposes is only to display unknown bit mappings.  When the
+        protocol does not send the unassigned bits, this leaf would be absent
+        in the output of the operational state.</t>
+
+      <t>Using the prior example, one way to model this would be:</t>
+
+      <figure>
+        <name>BGP Graceful Restart Specific Unknown Bits</name>
+        <artset>
+          <artwork type="ascii-art" align="center">
+            <![CDATA[
+     leaf unknown-flags {
+       type bits {
+         bit unknown-2 {
+           position 2;
+           description
+             "Bit 2 was received but is currently RESERVED.";
+         }
+         bit unknown-3 {
+           position 3;
+           description
+             "Bit 3 was received but is currently RESERVED.";
+         }
+       }
+       description
+         "When a bit is exchanged in the Graceful Restart Flags
+          field that is unknown to this module, their bit position
+          is rendered using the associated unknown bit.";
+       reference
+         "RFC 4724: Graceful Restart Mechanism for BGP, Section 3.";
+     }
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+
+      <t>Deleting bit assignments in later versions of the model are not
+        permitted by current YANG versioning rules.  Since the only purpose of
+        such a bits type is to display fields that may change during maintenance
+        of the protocol, ideally a single typedef is used when modeling such
+        circumstances.  Such a typedef is included in the next section.</t>
+    </section>
+    <section>
+      <name>IETF YANG Unknown Bit Types Module</name>
+      <figure>
+        <artset>
+          <artwork type="ascii-art" align="center">
+            <![CDATA[
+module ietf-yang-unknown-bit-types {
+  yang-version 1.1;
+  namespace "urn:ietf:params:xml:ns:yang:ietf-yang-unknown-bit-types";
+  prefix yang-ubt;
+
+  // meta
+
+  organization
+    "IETF NETMOD (NETCONF Data Modeling Language) Working Group";
+
+  contact
+    "WG Web:   <http://tools.ietf.org/wg/netmod/>
+     WG List:  <mailto:netmod@ietf.org>
+
+     Editor:   Jeffrey Haas
+               <mailto:jhaas@juniper.net>";
+
+  description
+    "This module contains data definitions for modeling operational
+     state that would normally be represented using the YANG 'bits'
+     type, but currently no known mapping for that bit position is
+     registered.
+
+     Copyright (c) 2023 IETF Trust and the persons identified as
+     authors of the code. All rights reserved.
+
+     Redistribution and use in source and binary forms, with or
+     without modification, is permitted pursuant to, and subject to
+     the license terms contained in, the Simplified BSD License set
+     forth in Section 4.c of the IETF Trust's Legal Provisions
+     Relating to IETF Documents
+     (https://trustee.ietf.org/license-info).
+
+     This version of this YANG module is part of RFC XXXX
+     (https://www.rfc-editor.org/info/rfcXXXX); see the RFC itself
+     for full legal notices.
+
+     The key words 'MUST', 'MUST NOT', 'REQUIRED', 'SHALL', 'SHALL
+     NOT', 'SHOULD', 'SHOULD NOT', 'RECOMMENDED', 'NOT RECOMMENDED',
+     'MAY', and 'OPTIONAL' in this document are to be interpreted as
+     described in BCP 14 (RFC 2119) (RFC 8174) when, and only when,
+     they appear in all capitals, as shown here.";
+
+  revision 2023-01-25 {
+    description
+      "Initial Version";
+    reference
+      "RFC XXXX: YANG module for unknown bit types.";
+  }
+
+  /*
+   * Typedefs
+   */
+
+  typedef unknown-bits {
+    type bits {
+      bit unknown-0 {
+        position 0;
+        description
+          "Bit 0 currently has no known mapping for this state.";
+      }
+      bit unknown-1 {
+        position 1;
+        description
+          "Bit 1 currently has no known mapping for this state.";
+      }
+      bit unknown-2 {
+        position 2;
+        description
+          "Bit 2 currently has no known mapping for this state.";
+      }
+      bit unknown-3 {
+        position 3;
+        description
+          "Bit 3 currently has no known mapping for this state.";
+      }
+      bit unknown-4 {
+        position 4;
+        description
+          "Bit 4 currently has no known mapping for this state.";
+      }
+      bit unknown-5 {
+        position 5;
+        description
+          "Bit 5 currently has no known mapping for this state.";
+      }
+      bit unknown-6 {
+        position 6;
+        description
+          "Bit 6 currently has no known mapping for this state.";
+      }
+      bit unknown-7 {
+        position 7;
+        description
+          "Bit 7 currently has no known mapping for this state.";
+      }
+      bit unknown-8 {
+        position 8;
+        description
+          "Bit 8 currently has no known mapping for this state.";
+      }
+      bit unknown-9 {
+        position 9;
+        description
+          "Bit 9 currently has no known mapping for this state.";
+      }
+      bit unknown-10 {
+        position 10;
+        description
+          "Bit 10 currently has no known mapping for this state.";
+      }
+      bit unknown-11 {
+        position 11;
+        description
+          "Bit 11 currently has no known mapping for this state.";
+      }
+      bit unknown-12 {
+        position 12;
+        description
+          "Bit 12 currently has no known mapping for this state.";
+      }
+      bit unknown-13 {
+        position 13;
+        description
+          "Bit 13 currently has no known mapping for this state.";
+      }
+      bit unknown-14 {
+        position 14;
+        description
+          "Bit 14 currently has no known mapping for this state.";
+      }
+      bit unknown-15 {
+        position 15;
+        description
+          "Bit 15 currently has no known mapping for this state.";
+      }
+      bit unknown-16 {
+        position 16;
+        description
+          "Bit 16 currently has no known mapping for this state.";
+      }
+      bit unknown-17 {
+        position 17;
+        description
+          "Bit 17 currently has no known mapping for this state.";
+      }
+      bit unknown-18 {
+        position 18;
+        description
+          "Bit 18 currently has no known mapping for this state.";
+      }
+      bit unknown-19 {
+        position 19;
+        description
+          "Bit 19 currently has no known mapping for this state.";
+      }
+      bit unknown-20 {
+        position 20;
+        description
+          "Bit 20 currently has no known mapping for this state.";
+      }
+      bit unknown-21 {
+        position 21;
+        description
+          "Bit 21 currently has no known mapping for this state.";
+      }
+      bit unknown-22 {
+        position 22;
+        description
+          "Bit 22 currently has no known mapping for this state.";
+      }
+      bit unknown-23 {
+        position 23;
+        description
+          "Bit 23 currently has no known mapping for this state.";
+      }
+      bit unknown-24 {
+        position 24;
+        description
+          "Bit 24 currently has no known mapping for this state.";
+      }
+      bit unknown-25 {
+        position 25;
+        description
+          "Bit 25 currently has no known mapping for this state.";
+      }
+      bit unknown-26 {
+        position 26;
+        description
+          "Bit 26 currently has no known mapping for this state.";
+      }
+      bit unknown-27 {
+        position 27;
+        description
+          "Bit 27 currently has no known mapping for this state.";
+      }
+      bit unknown-28 {
+        position 28;
+        description
+          "Bit 28 currently has no known mapping for this state.";
+      }
+      bit unknown-29 {
+        position 29;
+        description
+          "Bit 29 currently has no known mapping for this state.";
+      }
+      bit unknown-30 {
+        position 30;
+        description
+          "Bit 30 currently has no known mapping for this state.";
+      }
+      bit unknown-31 {
+        position 31;
+        description
+          "Bit 31 currently has no known mapping for this state.";
+      }
+      bit unknown-32 {
+        position 32;
+        description
+          "Bit 32 currently has no known mapping for this state.";
+      }
+      bit unknown-33 {
+        position 33;
+        description
+          "Bit 33 currently has no known mapping for this state.";
+      }
+      bit unknown-34 {
+        position 34;
+        description
+          "Bit 34 currently has no known mapping for this state.";
+      }
+      bit unknown-35 {
+        position 35;
+        description
+          "Bit 35 currently has no known mapping for this state.";
+      }
+      bit unknown-36 {
+        position 36;
+        description
+          "Bit 36 currently has no known mapping for this state.";
+      }
+      bit unknown-37 {
+        position 37;
+        description
+          "Bit 37 currently has no known mapping for this state.";
+      }
+      bit unknown-38 {
+        position 38;
+        description
+          "Bit 38 currently has no known mapping for this state.";
+      }
+      bit unknown-39 {
+        position 39;
+        description
+          "Bit 39 currently has no known mapping for this state.";
+      }
+      bit unknown-40 {
+        position 40;
+        description
+          "Bit 40 currently has no known mapping for this state.";
+      }
+      bit unknown-41 {
+        position 41;
+        description
+          "Bit 41 currently has no known mapping for this state.";
+      }
+      bit unknown-42 {
+        position 42;
+        description
+          "Bit 42 currently has no known mapping for this state.";
+      }
+      bit unknown-43 {
+        position 43;
+        description
+          "Bit 43 currently has no known mapping for this state.";
+      }
+      bit unknown-44 {
+        position 44;
+        description
+          "Bit 44 currently has no known mapping for this state.";
+      }
+      bit unknown-45 {
+        position 45;
+        description
+          "Bit 45 currently has no known mapping for this state.";
+      }
+      bit unknown-46 {
+        position 46;
+        description
+          "Bit 46 currently has no known mapping for this state.";
+      }
+      bit unknown-47 {
+        position 47;
+        description
+          "Bit 47 currently has no known mapping for this state.";
+      }
+      bit unknown-48 {
+        position 48;
+        description
+          "Bit 48 currently has no known mapping for this state.";
+      }
+      bit unknown-49 {
+        position 49;
+        description
+          "Bit 49 currently has no known mapping for this state.";
+      }
+      bit unknown-50 {
+        position 50;
+        description
+          "Bit 50 currently has no known mapping for this state.";
+      }
+      bit unknown-51 {
+        position 51;
+        description
+          "Bit 51 currently has no known mapping for this state.";
+      }
+      bit unknown-52 {
+        position 52;
+        description
+          "Bit 52 currently has no known mapping for this state.";
+      }
+      bit unknown-53 {
+        position 53;
+        description
+          "Bit 53 currently has no known mapping for this state.";
+      }
+      bit unknown-54 {
+        position 54;
+        description
+          "Bit 54 currently has no known mapping for this state.";
+      }
+      bit unknown-55 {
+        position 55;
+        description
+          "Bit 55 currently has no known mapping for this state.";
+      }
+      bit unknown-56 {
+        position 56;
+        description
+          "Bit 56 currently has no known mapping for this state.";
+      }
+      bit unknown-57 {
+        position 57;
+        description
+          "Bit 57 currently has no known mapping for this state.";
+      }
+      bit unknown-58 {
+        position 58;
+        description
+          "Bit 58 currently has no known mapping for this state.";
+      }
+      bit unknown-59 {
+        position 59;
+        description
+          "Bit 59 currently has no known mapping for this state.";
+      }
+      bit unknown-60 {
+        position 60;
+        description
+          "Bit 60 currently has no known mapping for this state.";
+      }
+      bit unknown-61 {
+        position 61;
+        description
+          "Bit 61 currently has no known mapping for this state.";
+      }
+      bit unknown-62 {
+        position 62;
+        description
+          "Bit 62 currently has no known mapping for this state.";
+      }
+      bit unknown-63 {
+        position 63;
+        description
+          "Bit 63 currently has no known mapping for this state.";
+      }
+    }
+    description
+      "Typedef describing 64 bits worth of unknown bits.  This can be
+       used to model operational state that would normally be modeled
+       using the YANG 'bits' type, but no registered bit has been
+       created.";
+  }
+}
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+    </section>
+    
+    <section anchor="IANA">
+      <name>IANA Considerations</name>
+      
+      <t>This document registers one URI and one YANG module.</t>
+      <section title="URI Registration">
+        <t>Following the format in the <xref target="RFC3688">IETF XML
+        registry</xref> [RFC3688], the following registration is requested to
+        be made:</t>
+        <figure>
+          <artwork><![CDATA[
+URI: urn:ietf:params:xml:ns:yang:ietf-yang-unknown-bit-types
+          ]]></artwork>
+        </figure>
+
+        <t>Registrant Contact: The IESG. XML: N/A, the requested URI is an XML
+        namespace.</t>
+      </section>
+
+      <section title="YANG Module Name Registration">
+        <t>This document registers one YANG module in the YANG Module Names
+        registry <xref target="RFC6020">YANG</xref>.</t>
+
+        <figure>
+          <artwork><![CDATA[
+name: ietf-yang-unknown-bit-types
+namespace: urn:ietf:params:xml:ns:yang:ietf-yang-unknown-bit-types
+prefix: yang-ubt
+reference: RFC XXXX
+          ]]></artwork>
+        </figure>
+      </section>
+    </section>
+    
+    <section anchor="Security">
+      <name>Security Considerations</name>
+      <t>Lack of operational visibility for protocol state can make
+        troubleshooting protocol issues more difficult.  The mechanism defined
+        in this document may help reduce the scope of such issues and
+        potentially remove the security considerations such lack of operational
+        visibility may cause.</t>
+    </section>
+    
+  </middle>
+
+  <back>
+    <references>
+      <name>References</name>
+      <references>
+        <name>Normative References</name>
+        
+        <xi:include href="https://www.rfc-editor.org/refs/bibxml/reference.RFC.2119.xml"/>
+        <xi:include href="https://www.rfc-editor.org/refs/bibxml/reference.RFC.8174.xml"/>
+        <!-- The recommended and simplest way to include a well known reference -->
+        <xi:include href="https://www.rfc-editor.org/refs/bibxml/reference.RFC.7950.xml"/>
+        
+      </references>
+ 
+      <references>
+        <name>Informative References</name>
+        <xi:include href="https://www.rfc-editor.org/refs/bibxml/reference.RFC.3688.xml"/>
+        <xi:include href="https://www.rfc-editor.org/refs/bibxml/reference.RFC.4724.xml"/>
+        <xi:include href="https://www.rfc-editor.org/refs/bibxml/reference.RFC.6020.xml"/>
+        <xi:include href="https://www.rfc-editor.org/refs/bibxml/reference.RFC.8538.xml"/>
+        <xi:include href="https://bib.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-idr-bgp-model.xml"/>
+      </references>
+    </references>
+    
+<!--
+    <section anchor="Acknowledgements" numbered="false">
+      <name>Acknowledgements</name>
+    </section>
+    
+    <section anchor="Contributors" numbered="false">
+      <name>Contributors</name>
+    </section>
+-->
+    
+ </back>
+</rfc>
