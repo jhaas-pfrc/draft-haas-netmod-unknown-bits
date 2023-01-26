@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
-     draft-rfcxml-general-template-standard-00
-  
-     This template includes examples of the most commonly used features of RFCXML with comments 
-     explaining how to customise them. This template can be quickly turned into an I-D by editing 
-     the examples provided. Look for [REPLACE], [REPLACE/DELETE], [CHECK] and edit accordingly.
-     Note - 'DELETE' means delete the element or attribute, not just the contents.
-     
-     Documentation is at https://authors.ietf.org/en/templates-and-schemas
--->
 <?xml-model href="rfc7991bis.rnc"?>  <!-- Required for schema validation and schema-aware editing -->
 <!-- <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?> -->
 <!-- This third-party XSLT can be enabled for direct transformations in XML processors, including most browsers -->
@@ -25,7 +15,7 @@
 
 <rfc
   xmlns:xi="http://www.w3.org/2001/XInclude"
-  category="info"
+  category="std"
   docName="draft-haas-netmod-unknown-bits-00"
   ipr="trust200902"
   obsoletes=""
@@ -33,21 +23,13 @@
   submissionType="IETF"
   xml:lang="en"
   version="3">
-<!-- [REPLACE] 
-       * docName with name of your draft
-     [CHECK] 
-       * category should be one of std, bcp, info, exp, historic
-       * ipr should be one of trust200902, noModificationTrust200902, noDerivativesTrust200902, pre5378Trust200902
-       * updates can be an RFC number as NNNN
-       * obsoletes can be an RFC number as NNNN 
--->
 
   <front>
     <title abbrev="YANG Unknown Bits">Representing Unknown YANG bits in Operational State</title>
 
     <seriesInfo name="Internet-Draft" value="draft-haas-netmod-unknown-bits-00"/>
    
-    <author fullname="Jeffrey Haas" initials="J." role="editor" surname="Haas">
+    <author fullname="Jeffrey Haas" initials="J." surname="Haas">
       <organization>Juniper Networks</organization>
 
       <address>
@@ -131,6 +113,8 @@
     </section>
 
     <section>
+      <name>Modeling Unknown Bits</name>
+      <section>
       <name>Example of Issue: Modeling BGP's Graceful Restart Flags</name>
 
       <t>BGP's Graceful Restart Capability 
@@ -206,7 +190,10 @@
         </artset>
       </figure>
 
-      <t>YANG module revisioning rules would require the graceful-restart-flags typedef to be updated.  For such protocol well-known fields, this encourages such typedefs to be IANA-maintained for ease of update.  Such a revised typedef may resemble:</t>
+      <t>YANG module versioning rules would require the graceful-restart-flags
+        typedef to be updated.  For protocol well-known fields, this encourages
+        such typedefs to be IANA-maintained for ease of update.  A revised
+        typedef may resemble:</t>
 
       <figure>
         <name>Revised BGP Graceful Restart Flags Typedef</name>
@@ -224,15 +211,15 @@
              "RFC 4724: Graceful Restart Mechanism for BGP,
               Section 3.";
          }
-       }
-       bit notification {
-         position 1;
-         description
-           "The second most significant bit is defined in [RFC 8538]
-            as the Graceful Notification ('N') bit. [...]";
-         reference
-           "RFC 8538: Notification Message Support for BGP Graceful
-            Restart, Section 2.";
+         bit notification {
+           position 1;
+           description
+             "The second most significant bit is defined in [RFC 8538]
+              as the Graceful Notification ('N') bit. [...]";
+           reference
+             "RFC 8538: Notification Message Support for BGP Graceful
+              Restart, Section 2.";
+         }
        }
      }
             ]]>
@@ -241,29 +228,46 @@
       </figure>
 
       <t>Consider a router supporting the old typedef receiving a BGP Graceful Restart
-        Capability containing both the 'R' and 'N' bit in the BGP protocol.  In
+        Capability containing both the 'R' and 'N' bits in the BGP protocol.  In
         that typedef, the "flags" leaf could only display position 0, the
         "restart" named bit.  The implementation couldn't display that the 'N'
         bit was sent in the protocol.</t>
+
+      <figure>
+        <name>Flags for 'R' and 'N' bits with original leaves and typedef</name>
+        <artset>
+          <artwork type="ascii-art">
+            <![CDATA[
+            <flags>restart</flags>
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
     </section>
 
     <section>
-      <name>Modeling Unknown Bits</name>
+      <name>Defining Unknown Bits</name>
 
       <t>One solution to modeling unknown bits is to have a subsequent leaf
         whose purposes is only to display unknown bit mappings.  When the
         protocol does not send the unassigned bits, this leaf would be absent
         in the output of the operational state.</t>
 
-      <t>Using the prior example, one way to model this would be:</t>
+      <t>Using the example where only the 'R' bit was defined, one way to model
+        this would be:</t>
 
       <figure>
         <name>BGP Graceful Restart Specific Unknown Bits</name>
         <artset>
           <artwork type="ascii-art" align="center">
             <![CDATA[
-     leaf unknown-flags {
+     typedef  unknown-flags {
        type bits {
+         bit unknown-1 {
+           position 1;
+           description
+             "Bit 1 was received but is currently RESERVED.";
+         }
          bit unknown-2 {
            position 2;
            description
@@ -282,16 +286,92 @@
        reference
          "RFC 4724: Graceful Restart Mechanism for BGP, Section 3.";
      }
+     leaf unknown-flags {
+       type unknown-flags;
+       description
+         "Restart Flags advertised by the Graceful Restart
+          Capability";
+       reference
+         "RFC 4724: Graceful Restart Mechanism for BGP, Section 3.";
+     }
             ]]>
           </artwork>
         </artset>
       </figure>
 
-      <t>Deleting bit assignments in later versions of the model are not
-        permitted by current YANG versioning rules.  Since the only purpose of
-        such a bits type is to display fields that may change during maintenance
-        of the protocol, ideally a single typedef is used when modeling such
-        circumstances.  Such a typedef is included in the next section.</t>
+      <t>If the router using the above modeling received a BGP Graceful Restart
+        Capability containing both the 'R' and the 'N' bits, it would now be
+        rendered:</t>
+
+      <figure>
+        <name>Flags for 'R' and 'N' bits with new leaves and typedefs</name>
+        <artset>
+          <artwork type="ascii-art">
+            <![CDATA[
+            <flags>restart</flags>
+            <unknown-flags>unknown-1</unknown-flags>
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+
+      <t>Deleting bit assignments in later versions of the model is not
+        permitted by current YANG versioning rules.  The only purpose of such
+        unknown named bits is to display fields that may later be assigned
+        during maintenance of the protocol.</t>
+      <t>For example, when position 1, "bit notification" is assigned, the same
+        example scenario would then render as:</t>
+
+      <figure>
+        <name>Flags for 'R' and 'N' bits with new leaves and updated typedef</name>
+        <artset>
+          <artwork type="ascii-art">
+            <![CDATA[
+            <flags>restart unknown</flags>
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+    </section>
+
+    <section>
+      <name>Consistently Modeling Unknown Bits</name>
+      <t>Each YANG module requiring this pattern to represent unknown bits
+        could define its own protocol-specific typedefs for the appropriate
+        number of unknown bits for their fields.  However, there is operational
+        benefit to use a consistent pattern for such unknown bits.  A common
+        typedef for this purpose, "unknown-bits", is defined in the next section.</t>
+      <t>The unknown-bits typedef defines 64 bits of unknown bits.  Considering
+        the example for the BGP Graceful Restart Flags bits where only 4 bits are
+        present in the field, 64 bits for the typedef are not a problem.  Only
+        the bits received in the protocol that aren't recognized would be
+        displayed in the protocol-specific "unknown-flags" leaf, or similar.</t>
+      <t>Here's an example usage of this typedef using the prior
+        "unknown-flags" leaf:</t>
+
+      <figure>
+        <name>BGP Graceful Restart Specific Unknown Bits with Typedef</name>
+        <artset>
+          <artwork type="ascii-art" align="center">
+            <![CDATA[
+     include ietf-yang-unknown-bit-types {
+       prefix yang-ubt;
+     }
+     leaf unknown-flags {
+       type ubt:unknown-bits;
+       description
+         "When a bit is exchanged in the Graceful Restart Flags
+          field that is unknown to this module, their bit position
+          is rendered using the associated unknown bit.";
+       reference
+         "RFC 4724: Graceful Restart Mechanism for BGP, Section 3.";
+     }
+            ]]>
+          </artwork>
+        </artset>
+      </figure>
+    </section>
+
     </section>
     <section>
       <name>IETF YANG Unknown Bit Types Module</name>
@@ -756,11 +836,12 @@ reference: RFC XXXX
       </references>
     </references>
     
-<!--
     <section anchor="Acknowledgements" numbered="false">
       <name>Acknowledgements</name>
+      <t>Martin Bjorklund provided a review on an early version of this document.</t>
     </section>
     
+<!--
     <section anchor="Contributors" numbered="false">
       <name>Contributors</name>
     </section>
