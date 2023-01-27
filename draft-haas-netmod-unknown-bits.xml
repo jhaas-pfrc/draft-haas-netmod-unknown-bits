@@ -16,7 +16,7 @@
 <rfc
   xmlns:xi="http://www.w3.org/2001/XInclude"
   category="std"
-  docName="draft-haas-netmod-unknown-bits-00"
+  docName="draft-haas-netmod-unknown-bits-01"
   ipr="trust200902"
   obsoletes=""
   updates=""
@@ -27,7 +27,7 @@
   <front>
     <title abbrev="YANG Unknown Bits">Representing Unknown YANG bits in Operational State</title>
 
-    <seriesInfo name="Internet-Draft" value="draft-haas-netmod-unknown-bits-00"/>
+    <seriesInfo name="Internet-Draft" value="draft-haas-netmod-unknown-bits-01"/>
    
     <author fullname="Jeffrey Haas" initials="J." surname="Haas">
       <organization>Juniper Networks</organization>

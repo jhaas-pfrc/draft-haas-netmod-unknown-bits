@@ -4,12 +4,12 @@
 
 netmod                                                           J. Haas
 Internet-Draft                                          Juniper Networks
-Intended status: Standards Track                         26 January 2023
-Expires: 30 July 2023
+Intended status: Standards Track                         27 January 2023
+Expires: 31 July 2023
 
 
           Representing Unknown YANG bits in Operational State
-                   draft-haas-netmod-unknown-bits-00
+                   draft-haas-netmod-unknown-bits-01
 
 Abstract
 
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 July 2023.
+   This Internet-Draft will expire on 31 July 2023.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Haas                      Expires 30 July 2023                  [Page 1]
+Haas                      Expires 31 July 2023                  [Page 1]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Haas                      Expires 30 July 2023                  [Page 2]
+Haas                      Expires 31 July 2023                  [Page 2]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -165,7 +165,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                  [Page 3]
+Haas                      Expires 31 July 2023                  [Page 3]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -221,7 +221,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                  [Page 4]
+Haas                      Expires 31 July 2023                  [Page 4]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -277,7 +277,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                  [Page 5]
+Haas                      Expires 31 July 2023                  [Page 5]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -333,7 +333,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                  [Page 6]
+Haas                      Expires 31 July 2023                  [Page 6]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -389,7 +389,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                  [Page 7]
+Haas                      Expires 31 July 2023                  [Page 7]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -445,7 +445,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                  [Page 8]
+Haas                      Expires 31 July 2023                  [Page 8]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -501,7 +501,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                  [Page 9]
+Haas                      Expires 31 July 2023                  [Page 9]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -557,7 +557,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 10]
+Haas                      Expires 31 July 2023                 [Page 10]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -613,7 +613,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 11]
+Haas                      Expires 31 July 2023                 [Page 11]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -669,7 +669,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 12]
+Haas                      Expires 31 July 2023                 [Page 12]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -725,7 +725,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 13]
+Haas                      Expires 31 July 2023                 [Page 13]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -781,7 +781,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 14]
+Haas                      Expires 31 July 2023                 [Page 14]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -837,7 +837,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 15]
+Haas                      Expires 31 July 2023                 [Page 15]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -893,7 +893,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 16]
+Haas                      Expires 31 July 2023                 [Page 16]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -949,7 +949,7 @@ Author's Address
 
 
 
-Haas                      Expires 30 July 2023                 [Page 17]
+Haas                      Expires 31 July 2023                 [Page 17]
 
 Internet-Draft              YANG Unknown Bits               January 2023
 
@@ -1005,4 +1005,4 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 30 July 2023                 [Page 18]
+Haas                      Expires 31 July 2023                 [Page 18]
