@@ -466,37 +466,37 @@ Internet-Draft              YANG Unknown Bits               January 2023
         bit unknown-0 {
           position 0;
           description
-            "Bit 0 currently has no known mapping for this state.";
+            "Bit 0 is unknown.";
         }
         bit unknown-1 {
           position 1;
           description
-            "Bit 1 currently has no known mapping for this state.";
+            "Bit 1 is unknown.";
         }
         bit unknown-2 {
           position 2;
           description
-            "Bit 2 currently has no known mapping for this state.";
+            "Bit 2 is unknown.";
         }
         bit unknown-3 {
           position 3;
           description
-            "Bit 3 currently has no known mapping for this state.";
+            "Bit 3 is unknown.";
         }
         bit unknown-4 {
           position 4;
           description
-            "Bit 4 currently has no known mapping for this state.";
+            "Bit 4 is unknown.";
         }
         bit unknown-5 {
           position 5;
           description
-            "Bit 5 currently has no known mapping for this state.";
+            "Bit 5 is unknown.";
         }
         bit unknown-6 {
           position 6;
           description
-            "Bit 6 currently has no known mapping for this state.";
+            "Bit 6 is unknown.";
         }
 
 
@@ -509,47 +509,47 @@ Internet-Draft              YANG Unknown Bits               January 2023
         bit unknown-7 {
           position 7;
           description
-            "Bit 7 currently has no known mapping for this state.";
+            "Bit 7 is unknown.";
         }
         bit unknown-8 {
           position 8;
           description
-            "Bit 8 currently has no known mapping for this state.";
+            "Bit 8 is unknown.";
         }
         bit unknown-9 {
           position 9;
           description
-            "Bit 9 currently has no known mapping for this state.";
+            "Bit 9 is unknown.";
         }
         bit unknown-10 {
           position 10;
           description
-            "Bit 10 currently has no known mapping for this state.";
+            "Bit 10 is unknown.";
         }
         bit unknown-11 {
           position 11;
           description
-            "Bit 11 currently has no known mapping for this state.";
+            "Bit 11 is unknown.";
         }
         bit unknown-12 {
           position 12;
           description
-            "Bit 12 currently has no known mapping for this state.";
+            "Bit 12 is unknown.";
         }
         bit unknown-13 {
           position 13;
           description
-            "Bit 13 currently has no known mapping for this state.";
+            "Bit 13 is unknown.";
         }
         bit unknown-14 {
           position 14;
           description
-            "Bit 14 currently has no known mapping for this state.";
+            "Bit 14 is unknown.";
         }
         bit unknown-15 {
           position 15;
           description
-            "Bit 15 currently has no known mapping for this state.";
+            "Bit 15 is unknown.";
         }
         bit unknown-16 {
           position 16;
@@ -562,52 +562,52 @@ Haas                      Expires 31 July 2023                 [Page 10]
 Internet-Draft              YANG Unknown Bits               January 2023
 
 
-            "Bit 16 currently has no known mapping for this state.";
+            "Bit 16 is unknown.";
         }
         bit unknown-17 {
           position 17;
           description
-            "Bit 17 currently has no known mapping for this state.";
+            "Bit 17 is unknown.";
         }
         bit unknown-18 {
           position 18;
           description
-            "Bit 18 currently has no known mapping for this state.";
+            "Bit 18 is unknown.";
         }
         bit unknown-19 {
           position 19;
           description
-            "Bit 19 currently has no known mapping for this state.";
+            "Bit 19 is unknown.";
         }
         bit unknown-20 {
           position 20;
           description
-            "Bit 20 currently has no known mapping for this state.";
+            "Bit 20 is unknown.";
         }
         bit unknown-21 {
           position 21;
           description
-            "Bit 21 currently has no known mapping for this state.";
+            "Bit 21 is unknown.";
         }
         bit unknown-22 {
           position 22;
           description
-            "Bit 22 currently has no known mapping for this state.";
+            "Bit 22 is unknown.";
         }
         bit unknown-23 {
           position 23;
           description
-            "Bit 23 currently has no known mapping for this state.";
+            "Bit 23 is unknown.";
         }
         bit unknown-24 {
           position 24;
           description
-            "Bit 24 currently has no known mapping for this state.";
+            "Bit 24 is unknown.";
         }
         bit unknown-25 {
           position 25;
           description
-            "Bit 25 currently has no known mapping for this state.";
+            "Bit 25 is unknown.";
         }
         bit unknown-26 {
 
@@ -620,52 +620,52 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
           position 26;
           description
-            "Bit 26 currently has no known mapping for this state.";
+            "Bit 26 is unknown.";
         }
         bit unknown-27 {
           position 27;
           description
-            "Bit 27 currently has no known mapping for this state.";
+            "Bit 27 is unknown.";
         }
         bit unknown-28 {
           position 28;
           description
-            "Bit 28 currently has no known mapping for this state.";
+            "Bit 28 is unknown.";
         }
         bit unknown-29 {
           position 29;
           description
-            "Bit 29 currently has no known mapping for this state.";
+            "Bit 29 is unknown.";
         }
         bit unknown-30 {
           position 30;
           description
-            "Bit 30 currently has no known mapping for this state.";
+            "Bit 30 is unknown.";
         }
         bit unknown-31 {
           position 31;
           description
-            "Bit 31 currently has no known mapping for this state.";
+            "Bit 31 is unknown.";
         }
         bit unknown-32 {
           position 32;
           description
-            "Bit 32 currently has no known mapping for this state.";
+            "Bit 32 is unknown.";
         }
         bit unknown-33 {
           position 33;
           description
-            "Bit 33 currently has no known mapping for this state.";
+            "Bit 33 is unknown.";
         }
         bit unknown-34 {
           position 34;
           description
-            "Bit 34 currently has no known mapping for this state.";
+            "Bit 34 is unknown.";
         }
         bit unknown-35 {
           position 35;
           description
-            "Bit 35 currently has no known mapping for this state.";
+            "Bit 35 is unknown.";
 
 
 
@@ -678,47 +678,47 @@ Internet-Draft              YANG Unknown Bits               January 2023
         bit unknown-36 {
           position 36;
           description
-            "Bit 36 currently has no known mapping for this state.";
+            "Bit 36 is unknown.";
         }
         bit unknown-37 {
           position 37;
           description
-            "Bit 37 currently has no known mapping for this state.";
+            "Bit 37 is unknown.";
         }
         bit unknown-38 {
           position 38;
           description
-            "Bit 38 currently has no known mapping for this state.";
+            "Bit 38 is unknown.";
         }
         bit unknown-39 {
           position 39;
           description
-            "Bit 39 currently has no known mapping for this state.";
+            "Bit 39 is unknown.";
         }
         bit unknown-40 {
           position 40;
           description
-            "Bit 40 currently has no known mapping for this state.";
+            "Bit 40 is unknown.";
         }
         bit unknown-41 {
           position 41;
           description
-            "Bit 41 currently has no known mapping for this state.";
+            "Bit 41 is unknown.";
         }
         bit unknown-42 {
           position 42;
           description
-            "Bit 42 currently has no known mapping for this state.";
+            "Bit 42 is unknown.";
         }
         bit unknown-43 {
           position 43;
           description
-            "Bit 43 currently has no known mapping for this state.";
+            "Bit 43 is unknown.";
         }
         bit unknown-44 {
           position 44;
           description
-            "Bit 44 currently has no known mapping for this state.";
+            "Bit 44 is unknown.";
         }
         bit unknown-45 {
           position 45;
@@ -731,52 +731,52 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
           description
-            "Bit 45 currently has no known mapping for this state.";
+            "Bit 45 is unknown.";
         }
         bit unknown-46 {
           position 46;
           description
-            "Bit 46 currently has no known mapping for this state.";
+            "Bit 46 is unknown.";
         }
         bit unknown-47 {
           position 47;
           description
-            "Bit 47 currently has no known mapping for this state.";
+            "Bit 47 is unknown.";
         }
         bit unknown-48 {
           position 48;
           description
-            "Bit 48 currently has no known mapping for this state.";
+            "Bit 48 is unknown.";
         }
         bit unknown-49 {
           position 49;
           description
-            "Bit 49 currently has no known mapping for this state.";
+            "Bit 49 is unknown.";
         }
         bit unknown-50 {
           position 50;
           description
-            "Bit 50 currently has no known mapping for this state.";
+            "Bit 50 is unknown.";
         }
         bit unknown-51 {
           position 51;
           description
-            "Bit 51 currently has no known mapping for this state.";
+            "Bit 51 is unknown.";
         }
         bit unknown-52 {
           position 52;
           description
-            "Bit 52 currently has no known mapping for this state.";
+            "Bit 52 is unknown.";
         }
         bit unknown-53 {
           position 53;
           description
-            "Bit 53 currently has no known mapping for this state.";
+            "Bit 53 is unknown.";
         }
         bit unknown-54 {
           position 54;
           description
-            "Bit 54 currently has no known mapping for this state.";
+            "Bit 54 is unknown.";
         }
 
 
@@ -789,47 +789,47 @@ Internet-Draft              YANG Unknown Bits               January 2023
         bit unknown-55 {
           position 55;
           description
-            "Bit 55 currently has no known mapping for this state.";
+            "Bit 55 is unknown.";
         }
         bit unknown-56 {
           position 56;
           description
-            "Bit 56 currently has no known mapping for this state.";
+            "Bit 56 is unknown.";
         }
         bit unknown-57 {
           position 57;
           description
-            "Bit 57 currently has no known mapping for this state.";
+            "Bit 57 is unknown.";
         }
         bit unknown-58 {
           position 58;
           description
-            "Bit 58 currently has no known mapping for this state.";
+            "Bit 58 is unknown.";
         }
         bit unknown-59 {
           position 59;
           description
-            "Bit 59 currently has no known mapping for this state.";
+            "Bit 59 is unknown.";
         }
         bit unknown-60 {
           position 60;
           description
-            "Bit 60 currently has no known mapping for this state.";
+            "Bit 60 is unknown.";
         }
         bit unknown-61 {
           position 61;
           description
-            "Bit 61 currently has no known mapping for this state.";
+            "Bit 61 is unknown.";
         }
         bit unknown-62 {
           position 62;
           description
-            "Bit 62 currently has no known mapping for this state.";
+            "Bit 62 is unknown.";
         }
         bit unknown-63 {
           position 63;
           description
-            "Bit 63 currently has no known mapping for this state.";
+            "Bit 63 is unknown.";
         }
       }
       description
