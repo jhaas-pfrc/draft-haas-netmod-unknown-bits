@@ -4,12 +4,12 @@
 
 netmod                                                           J. Haas
 Internet-Draft                                          Juniper Networks
-Intended status: Standards Track                         27 January 2023
-Expires: 31 July 2023
+Intended status: Standards Track                           10 April 2023
+Expires: 12 October 2023
 
 
           Representing Unknown YANG bits in Operational State
-                   draft-haas-netmod-unknown-bits-01
+                   draft-haas-netmod-unknown-bits-02
 
 Abstract
 
@@ -20,10 +20,10 @@ Abstract
    best suited when the meaning of a bit assignment is clear.
 
    When bits that are currently RESERVED or otherwise unassigned by the
-   protocol are received, being able to display them is necessary in
-   YANG operational models.  This cannot be done using the YANG 'bits'
-   built-in type without assigning them a name.  However, YANG
-   versioning rules do not permit renaming of named bits.
+   protocol are received, being able to model them is necessary in YANG
+   operational models.  This cannot be done using the YANG 'bits' built-
+   in type without assigning them a name.  However, YANG versioning
+   rules do not permit renaming of named bits.
 
    This draft proposes a methodology to represent unknown bits in YANG
    operational models and creates a YANG typedef to assist in uniformly
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 July 2023.
+   This Internet-Draft will expire on 12 October 2023.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Haas                      Expires 31 July 2023                  [Page 1]
+Haas                     Expires 12 October 2023                [Page 1]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -85,7 +85,7 @@ Table of Contents
      7.1.  Normative References  . . . . . . . . . . . . . . . . . .  16
      7.2.  Informative References  . . . . . . . . . . . . . . . . .  17
    Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  17
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  17
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  18
 
 1.  Requirements Language
 
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Haas                      Expires 31 July 2023                  [Page 2]
+Haas                     Expires 12 October 2023                [Page 2]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
    The YANG 'bits' built-in type (Section 9.7 of [RFC7950]) can be used
@@ -165,9 +165,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                  [Page 3]
+Haas                     Expires 12 October 2023                [Page 3]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
         typedef graceful-restart-flags {
@@ -221,9 +221,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                  [Page 4]
+Haas                     Expires 12 October 2023                [Page 4]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
        typedef graceful-restart-flags {
@@ -254,9 +254,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
    Consider a router supporting the old typedef receiving a BGP Graceful
    Restart Capability containing both the 'R' and 'N' bits in the BGP
-   protocol.  In that typedef, the "flags" leaf could only display
+   protocol.  In that typedef, the "flags" leaf could only represent
    position 0, the "restart" named bit.  The implementation couldn't
-   display that the 'N' bit was sent in the protocol.
+   represent that the 'N' bit was sent in the protocol.
 
 
                <flags>restart</flags>
@@ -267,7 +267,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
 3.2.  Defining Unknown Bits
 
    One solution to modeling unknown bits is to have a subsequent leaf
-   whose purposes is only to display unknown bit mappings.  When the
+   whose purposes is only to model unknown bit mappings.  When the
    protocol does not send the unassigned bits, this leaf would be absent
    in the output of the operational state.
 
@@ -277,9 +277,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                  [Page 5]
+Haas                     Expires 12 October 2023                [Page 5]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
         typedef  unknown-flags {
@@ -333,14 +333,14 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                  [Page 6]
+Haas                     Expires 12 October 2023                [Page 6]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
    Deleting bit assignments in later versions of the model is not
    permitted by current YANG versioning rules.  The only purpose of such
-   unknown named bits is to display fields that may later be assigned
+   unknown named bits is to represent fields that may later be assigned
    during maintenance of the protocol.
 
    For example, when position 1, "bit notification" is assigned, the
@@ -366,7 +366,7 @@ Internet-Draft              YANG Unknown Bits               January 2023
    Considering the example for the BGP Graceful Restart Flags bits where
    only 4 bits are present in the field, 64 bits for the typedef are not
    a problem.  Only the bits received in the protocol that aren't
-   recognized would be displayed in the protocol-specific "unknown-
+   recognized would be represented in the protocol-specific "unknown-
    flags" leaf, or similar.
 
    Here's an example usage of this typedef using the prior "unknown-
@@ -389,9 +389,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                  [Page 7]
+Haas                     Expires 12 October 2023                [Page 7]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
      Figure 9: BGP Graceful Restart Specific Unknown Bits with Typedef
@@ -445,9 +445,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                  [Page 8]
+Haas                     Expires 12 October 2023                [Page 8]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
     revision 2023-01-25 {
@@ -501,9 +501,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                  [Page 9]
+Haas                     Expires 12 October 2023                [Page 9]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
         bit unknown-7 {
@@ -557,9 +557,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                 [Page 10]
+Haas                     Expires 12 October 2023               [Page 10]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
             "Bit 16 is unknown.";
@@ -613,9 +613,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                 [Page 11]
+Haas                     Expires 12 October 2023               [Page 11]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
           position 26;
@@ -669,9 +669,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                 [Page 12]
+Haas                     Expires 12 October 2023               [Page 12]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
         }
@@ -725,9 +725,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                 [Page 13]
+Haas                     Expires 12 October 2023               [Page 13]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
           description
@@ -781,9 +781,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                 [Page 14]
+Haas                     Expires 12 October 2023               [Page 14]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
         bit unknown-55 {
@@ -837,9 +837,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                 [Page 15]
+Haas                     Expires 12 October 2023               [Page 15]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
          used to model operational state that would normally be modeled
@@ -893,9 +893,9 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-Haas                      Expires 31 July 2023                 [Page 16]
+Haas                     Expires 12 October 2023               [Page 16]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -933,26 +933,28 @@ Internet-Draft              YANG Unknown Bits               January 2023
               <https://www.rfc-editor.org/info/rfc8538>.
 
    [I-D.ietf-idr-bgp-model]
-              Jethanandani, M., Patel, K., Hares, S., and J. Haas, "BGP
-              YANG Model for Service Provider Networks", Work in
-              Progress, Internet-Draft, draft-ietf-idr-bgp-model-15, 13
-              October 2022, <https://www.ietf.org/archive/id/draft-ietf-
-              idr-bgp-model-15.txt>.
+              Jethanandani, M., Patel, K., Hares, S., and J. Haas, "YANG
+              Model for Border Gateway Protocol (BGP-4)", Work in
+              Progress, Internet-Draft, draft-ietf-idr-bgp-model-16, 1
+              March 2023, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-idr-bgp-model-16>.
 
 Acknowledgements
 
    Martin Bjorklund provided a review on an early version of this
    document.
 
-Author's Address
+   Thanks to Jurgen Schonwalder and the IETF netmod Working Group for
+   their feedback.
 
 
 
-
-Haas                      Expires 31 July 2023                 [Page 17]
+Haas                     Expires 12 October 2023               [Page 17]
 
-Internet-Draft              YANG Unknown Bits               January 2023
+Internet-Draft              YANG Unknown Bits                 April 2023
 
+
+Author's Address
 
    Jeffrey Haas
    Juniper Networks
@@ -1003,6 +1005,4 @@ Internet-Draft              YANG Unknown Bits               January 2023
 
 
 
-
-
-Haas                      Expires 31 July 2023                 [Page 18]
+Haas                     Expires 12 October 2023               [Page 18]

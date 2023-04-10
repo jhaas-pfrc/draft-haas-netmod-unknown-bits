@@ -16,7 +16,7 @@
 <rfc
   xmlns:xi="http://www.w3.org/2001/XInclude"
   category="std"
-  docName="draft-haas-netmod-unknown-bits-01"
+  docName="draft-haas-netmod-unknown-bits-02"
   ipr="trust200902"
   obsoletes=""
   updates=""
@@ -27,7 +27,7 @@
   <front>
     <title abbrev="YANG Unknown Bits">Representing Unknown YANG bits in Operational State</title>
 
-    <seriesInfo name="Internet-Draft" value="draft-haas-netmod-unknown-bits-01"/>
+    <seriesInfo name="Internet-Draft" value="draft-haas-netmod-unknown-bits-02"/>
    
     <author fullname="Jeffrey Haas" initials="J." surname="Haas">
       <organization>Juniper Networks</organization>
@@ -63,7 +63,7 @@
         suited when the meaning of a bit assignment is clear.</t>
 
       <t>When bits that are currently RESERVED or otherwise unassigned by the
-        protocol are received, being able to display them is necessary in YANG
+        protocol are received, being able to model them is necessary in YANG
         operational models.  This cannot be done using the YANG 'bits' built-in
         type without assigning them a name.  However, YANG versioning rules do
         not permit renaming of named bits.</t>
@@ -229,8 +229,8 @@
 
       <t>Consider a router supporting the old typedef receiving a BGP Graceful Restart
         Capability containing both the 'R' and 'N' bits in the BGP protocol.  In
-        that typedef, the "flags" leaf could only display position 0, the
-        "restart" named bit.  The implementation couldn't display that the 'N'
+        that typedef, the "flags" leaf could only represent position 0, the
+        "restart" named bit.  The implementation couldn't represent that the 'N'
         bit was sent in the protocol.</t>
 
       <figure>
@@ -249,7 +249,7 @@
       <name>Defining Unknown Bits</name>
 
       <t>One solution to modeling unknown bits is to have a subsequent leaf
-        whose purposes is only to display unknown bit mappings.  When the
+        whose purposes is only to model unknown bit mappings.  When the
         protocol does not send the unassigned bits, this leaf would be absent
         in the output of the operational state.</t>
 
@@ -317,7 +317,7 @@
 
       <t>Deleting bit assignments in later versions of the model is not
         permitted by current YANG versioning rules.  The only purpose of such
-        unknown named bits is to display fields that may later be assigned
+        unknown named bits is to represent fields that may later be assigned
         during maintenance of the protocol.</t>
       <t>For example, when position 1, "bit notification" is assigned, the same
         example scenario would then render as:</t>
@@ -345,7 +345,7 @@
         the example for the BGP Graceful Restart Flags bits where only 4 bits are
         present in the field, 64 bits for the typedef are not a problem.  Only
         the bits received in the protocol that aren't recognized would be
-        displayed in the protocol-specific "unknown-flags" leaf, or similar.</t>
+        represented in the protocol-specific "unknown-flags" leaf, or similar.</t>
       <t>Here's an example usage of this typedef using the prior
         "unknown-flags" leaf:</t>
 
